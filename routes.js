@@ -1,16 +1,15 @@
 import express from 'express';
-import { getAllEmployees, getEmployee, createEmployee, updateEmployee, deleteEmployee } from '../controllers/employeeController';
+import { getAllEmployees, getEmployee, createEmployee, updateEmployee, deleteEmployee } from './controllers/employeeController.js';
 
-const express = require('express');
+const router = express.Router();
 
-const app = express();
-app.use(express.json()); // Middleware to parse JSON bodies
+router.use(express.json()); // Middleware to parse JSON bodies
 
-app.get('/api/employees', getAllEmployees);
-app.get('/api/employees/:id', getEmployee);
-app.post('/api/employees', createEmployee);
-app.patch('/api/employees/:id', updateEmployee);
-app.delete('/api/employees/:id', deleteEmployee);
+// Employee Routes
+router.get('/api/employees', getAllEmployees);
+router.get('/api/employees/:id', getEmployee);
+router.post('/api/employees', createEmployee);  // Make sure this points to a function that interacts with MongoDB
+router.patch('/api/employees/:id', updateEmployee);
+router.delete('/api/employees/:id', deleteEmployee);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+export default router;
