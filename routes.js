@@ -1,16 +1,16 @@
 import express from 'express';
 import { getAllEmployees, getEmployee, createEmployee, updateEmployee, deleteEmployee } from '../controllers/employeeController';
 
-const router = express.Router();
+const express = require('express');
 
-// Route for getting all employees
-router.route('/api/employees').get(getAllEmployees).post(createEmployee);
+const app = express();
+app.use(express.json()); // Middleware to parse JSON bodies
 
-// Routes for individual employee operations
-router.route('/api/employees/:id')
-    .get(getEmployee)
-    .patch(updateEmployee)
-    .delete(deleteEmployee);
+app.get('/api/employees', getAllEmployees);
+app.get('/api/employees/:id', getEmployee);
+app.post('/api/employees', createEmployee);
+app.patch('/api/employees/:id', updateEmployee);
+app.delete('/api/employees/:id', deleteEmployee);
 
-export default router;
-
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
