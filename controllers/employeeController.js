@@ -99,13 +99,18 @@ export const deleteEmployee = async (req, res) => {
         return;
     }
     const { id } = req.params;
+    console.log("Trying to delete employee with ID:", id); // Log the ID received
+
     try {
         const result = await db.collection('employees').deleteOne({ _id: new ObjectId(id) });
         if (result.deletedCount === 0) {
+            console.log("No employee found with ID:", id);
             return res.status(404).send('Employee not found');
         }
+        console.log("Deleted employee with ID:", id);
         res.status(204).send();
     } catch (err) {
+        console.error('Failed to delete employee:', err);
         res.status(500).send('Failed to delete employee');
     } finally {
         if (client) {

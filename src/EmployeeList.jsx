@@ -11,7 +11,7 @@ function EmployeeRow({ employee, onDelete }) {
             <td>{employee.title}</td>
             <td>{employee.dateHired}</td>
             <td>{employee.currentlyEmployed ? "Yes" : "No"}</td>
-            <td><button onClick={() => onDelete(employee.id)}>DELETE</button></td>
+            <td><button onClick={() => onDelete(employee._id)}>DELETE</button></td>
         </tr>
     );
 }
@@ -61,7 +61,12 @@ class EmployeeList extends React.Component {
     };
 
     handleDelete = (id) => {
-        // Implementation for deleting an employee
+        // Ensure id is a string and is in the correct format
+        if (typeof id !== 'string' || !id.match(/^[0-9a-fA-F]{24}$/)) {
+            console.error("Invalid ID format or type:", id);
+            return;
+        }
+    
         fetch(`/api/employees/${id}`, {
             method: 'DELETE',
         }).then(response => {
@@ -70,10 +75,10 @@ class EmployeeList extends React.Component {
                     employees: prevState.employees.filter(employee => employee._id !== id)
                 }));
             } else {
-                console.error('Failed to delete the employee');
+                response.text().then(text => console.error('Failed to delete the employee:', text));
             }
         }).catch(error => console.error('Error:', error));
-    };
+    };    
 
     handleAddEmployee = (employee) => {
         // Implementation for adding an employee
