@@ -1,5 +1,28 @@
 import { ObjectId } from 'mongodb';
 
+// Explicit database identification
+import { connectDB } from '../db/connect.js';
+
+const performDatabaseOperation = async () => {
+    const client = await connectDB();  // This should return the MongoClient object
+    if (!client) {
+        console.log("Failed to connect to database");
+        return;
+    }
+
+    try {
+        const db = client.db('sample_employees');  // Access the database directly from the client
+        const result = await db.collection('employees').find({}).toArray();
+        console.log(result);
+    } catch (error) {
+        console.error('Error performing database operation:', error);
+    } finally {
+        await client.close();  // Close the MongoClient when done
+    }
+};
+
+performDatabaseOperation();
+
 // Assuming db is passed correctly via middleware
 export const getAllEmployees = async (req, res) => {
     const db = req.db;

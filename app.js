@@ -31,15 +31,5 @@ app.get('/', (req, res) => {
 app.use(express.json());
 app.use(routes);  // Use the routes defined in routes.js
 
-// POST endpoint for adding an employee
-app.post('/api/employees', (req, res) => {
-    const employee = req.body;  // Assuming the body contains an employee object
-    console.log('Adding new employee:', employee);
-
-    // Here you would typically add the employee to a database
-    // For demonstration, we'll just send the employee back
-    res.status(201).json({ message: "Employee added successfully", employee });
-});
-
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

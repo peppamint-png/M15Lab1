@@ -4,13 +4,13 @@ const uri = process.env.MONGO_URI; // MongoDB URI is in environment variables
 
 export const connectDB = async () => {
     try {
-        console.log('MongoDB URI:', process.env.MONGO_URI);
-        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        const client = new MongoClient(uri);
         await client.connect();
         console.log("Connected to MongoDB");
-        return client.db(); // returns the database instance
+        return client;  // Return the MongoClient object
     } catch (err) {
         console.error("Could not connect to MongoDB", err);
+        return null;  // Return null in case of an error
     }
-}
+};
 
