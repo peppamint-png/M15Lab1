@@ -1,41 +1,32 @@
 import { ObjectId } from 'mongodb';
-
-// Explicit database identification
 import { connectDB } from '../db/connect.js';
 
-const performDatabaseOperation = async () => {
-    const client = await connectDB();  // This should return the MongoClient object
+export const getAllEmployees = async (req, res) => {
+    const { client, db } = await connectDB();
     if (!client) {
-        console.log("Failed to connect to database");
+        console.error("Failed to connect to database");
+        res.status(500).json({ message: 'Failed to connect to database.' });
         return;
     }
-
-    try {
-        const db = client.db('sample_employees');  // Access the database directly from the client
-        const result = await db.collection('employees').find({}).toArray();
-        console.log(result);
-    } catch (error) {
-        console.error('Error performing database operation:', error);
-    } finally {
-        await client.close();  // Close the MongoClient when done
-    }
-};
-
-performDatabaseOperation();
-
-// Assuming db is passed correctly via middleware
-export const getAllEmployees = async (req, res) => {
-    const db = req.db;
     try {
         const employees = await db.collection('employees').find({}).toArray();
         res.status(200).json(employees);
     } catch (err) {
-        res.status(500).json({ message: 'Failed to get employees.' });
+        res.status(500).json({ message: 'Failed to get employees.', error: err.message });
+    } finally {
+        if (client) {
+            await client.close();  // Ensure the client is closed correctly
+        }
     }
 };
 
 export const createEmployee = async (req, res) => {
-    const db = req.db;
+    const { client, db } = await connectDB();
+    if (!client) {
+        console.error("Failed to connect to database");
+        res.status(500).json({ message: 'Failed to connect to database.' });
+        return;
+    }
     const { name, title, email, extension, dateHired, currentlyEmployed } = req.body;
     try {
         const newEmployee = {
@@ -47,11 +38,20 @@ export const createEmployee = async (req, res) => {
         res.status(201).json(result.ops[0]);
     } catch (err) {
         res.status(500).json({ message: "Failed to create employee.", error: err.message });
+    } finally {
+        if (client) {
+            await client.close();
+        }
     }
 };
 
 export const getEmployee = async (req, res) => {
-    const db = req.db;
+    const { client, db } = await connectDB();
+    if (!client) {
+        console.error("Failed to connect to database");
+        res.status(500).send('Failed to connect to database');
+        return;
+    }
     const { id } = req.params;
     try {
         const employee = await db.collection('employees').findOne({ _id: new ObjectId(id) });
@@ -61,11 +61,20 @@ export const getEmployee = async (req, res) => {
         res.status(200).json(employee);
     } catch (err) {
         res.status(500).send('Error retrieving employee');
+    } finally {
+        if (client) {
+            await client.close();
+        }
     }
 };
 
 export const updateEmployee = async (req, res) => {
-    const db = req.db;
+    const { client, db } = await connectDB();
+    if (!client) {
+        console.error("Failed to connect to database");
+        res.status(500).send('Failed to connect to database');
+        return;
+    }
     const { id } = req.params;
     try {
         const updated = await db.collection('employees').updateOne({ _id: new ObjectId(id) }, { $set: req.body });
@@ -75,11 +84,20 @@ export const updateEmployee = async (req, res) => {
         res.status(200).send('Employee updated successfully');
     } catch (err) {
         res.status(500).send('Failed to update employee');
+    } finally {
+        if (client) {
+            await client.close();
+        }
     }
 };
 
 export const deleteEmployee = async (req, res) => {
-    const db = req.db;
+    const { client, db } = await connectDB();
+    if (!client) {
+        console.error("Failed to connect to database");
+        res.status(500).send('Failed to connect to database');
+        return;
+    }
     const { id } = req.params;
     try {
         const result = await db.collection('employees').deleteOne({ _id: new ObjectId(id) });
@@ -89,5 +107,9 @@ export const deleteEmployee = async (req, res) => {
         res.status(204).send();
     } catch (err) {
         res.status(500).send('Failed to delete employee');
+    } finally {
+        if (client) {
+            await client.close();
+        }
     }
 };

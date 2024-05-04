@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 const mongoURI = 'mongodb+srv://student:mongodb@sandbox.y6sn8cp.mongodb.net/?retryWrites=true&w=majority&appName=Sandbox';
@@ -15,7 +14,7 @@ const connectDB = async () => {
     }
 };
 
-const testDatabaseOperation = async () => {
+const fetchEmployees = async () => {
     const client = await connectDB();
     if (!client) {
         console.log('Failed to connect to the database');
@@ -23,9 +22,9 @@ const testDatabaseOperation = async () => {
     }
 
     try {
-        const db = client.db('sample_employees');  // Specify the database name explicitly
-        const collection = db.collection('employees');  // Change 'employees' to your actual collection name if different
-        const documents = await collection.find({}).limit(5).toArray();  // Fetch the first 5 documents
+        const db = client.db('sample_employees');
+        const collection = db.collection('employees');
+        const documents = await collection.find({}).toArray();  // Fetch all documents from the 'employees' collection
         console.log('Documents:', documents);
     } catch (error) {
         console.error('Error performing database operation:', error);
@@ -34,4 +33,4 @@ const testDatabaseOperation = async () => {
     }
 };
 
-testDatabaseOperation();
+fetchEmployees();

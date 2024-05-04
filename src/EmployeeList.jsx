@@ -38,27 +38,58 @@ function EmployeeTable({ employees, onDelete }) {
         </table>
     );
 }
-
 class EmployeeList extends React.Component {
     state = {
-        employees: [
-            // Example employees
-            { id: 1, name: "John Doe", extension: 1234, email: "john.doe@example.com", title: "Developer", dateHired: "Jan 1, 2020", currentlyEmployed: true },
-            { id: 2, name: "Jane Smith", extension: 5678, email: "jane.smith@example.com", title: "Manager", dateHired: "Feb 1, 2020", currentlyEmployed: true }
-        ]
+        employees: [] // Initialize as an empty array, to be populated from the API
+    };
+
+    componentDidMount() {
+        this.fetchEmployees();
+    }
+
+    fetchEmployees = async () => {
+        try {
+            const response = await fetch('/api/employees');
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            const employees = await response.json();
+            this.setState({ employees });
+        } catch (error) {
+            console.error("Failed to fetch employees:", error);
+        }
     };
 
     handleDelete = (id) => {
-        this.setState({
-            employees: this.state.employees.filter(employee => employee.id !== id)
-        });
-    }
+        // Implementation for deleting an employee
+        fetch(`/api/employees/${id}`, {
+            method: 'DELETE',
+        }).then(response => {
+            if (response.ok) {
+                this.setState(prevState => ({
+                    employees: prevState.employees.filter(employee => employee._id !== id)
+                }));
+            } else {
+                console.error('Failed to delete the employee');
+            }
+        }).catch(error => console.error('Error:', error));
+    };
 
     handleAddEmployee = (employee) => {
-        this.setState(prevState => ({
-            employees: [...prevState.employees, { ...employee, id: prevState.employees.length + 1 }]
-        }));
-    }    
+        // Implementation for adding an employee
+        fetch('/api/employees', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employee),
+        }).then(response => response.json())
+        .then(data => {
+            this.setState(prevState => ({
+                employees: [...prevState.employees, data.employee]
+            }));
+        }).catch(error => console.error('Error:', error));
+    };
 
     render() {
         return (
