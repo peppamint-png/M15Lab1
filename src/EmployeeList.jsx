@@ -54,12 +54,18 @@ class EmployeeList extends React.Component {
         });
     }
 
+    handleAddEmployee = (employee) => {
+        this.setState(prevState => ({
+            employees: [...prevState.employees, { ...employee, id: prevState.employees.length + 1 }]
+        }));
+    }    
+
     render() {
         return (
             <div>
                 <h1>Employee Management Application</h1>
                 <EmployeeFilter />
-                <EmployeeAdd />
+                <EmployeeAdd onEmployeeAdd={this.handleAddEmployee} />
                 <EmployeeTable employees={this.state.employees} onDelete={this.handleDelete} />
             </div>
         );
