@@ -20,7 +20,15 @@ export const createEmployee = async (req, res) => {
         const { name, title, email, extension, dateHired, currentlyEmployed } = req.body;
         const newEmployee = { name, title, email, extension, dateHired: new Date(dateHired), currentlyEmployed };
         const result = await db.collection('employees').insertOne(newEmployee);
-        res.status(201).json({ message: "Employee added successfully", employee: result.ops[0] });
+
+        if (!result.acknowledged) {
+            throw new Error('Employee insertion failed');
+        }
+
+        // Construct the employee object to include the inserted ID
+        const employeeWithId = { ...newEmployee, _id: result.insertedId };
+
+        res.status(201).json({ message: "Employee added successfully", employee: employeeWithId });
     } catch (error) {
         console.error('Error adding new employee:', error);
         res.status(500).json({ message: "Failed to add employee", error: error.message });
