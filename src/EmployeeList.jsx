@@ -6,14 +6,19 @@ function EmployeeRow({ employee, onDelete }) {
     return (
         <tr>
             <td>{employee.name}</td>
-            <td>{employee.extension}</td>
-            <td>{employee.email}</td>
             <td>{employee.title}</td>
-            <td>{employee.dateHired}</td>
+            <td>{employee.email}</td>
+            <td>{employee.extension}</td>
+            <td>{formatDate(employee.dateHired)}</td>
             <td>{employee.currentlyEmployed ? "Yes" : "No"}</td>
             <td><button onClick={() => onDelete(employee._id)}>DELETE</button></td>
         </tr>
     );
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function EmployeeTable({ employees, onDelete }) {
@@ -22,9 +27,9 @@ function EmployeeTable({ employees, onDelete }) {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Extension</th>
-                    <th>Email</th>
                     <th>Title</th>
+                    <th>Email</th>
+                    <th>Extension</th>
                     <th>Date Hired</th>
                     <th>Currently Employed?</th>
                     <th>Action</th>
@@ -32,12 +37,13 @@ function EmployeeTable({ employees, onDelete }) {
             </thead>
             <tbody>
                 {employees.map(employee => (
-                    <EmployeeRow key={employee.id} employee={employee} onDelete={onDelete} />
+                    <EmployeeRow key={employee._id} employee={employee} onDelete={onDelete} />
                 ))}
             </tbody>
         </table>
     );
 }
+
 class EmployeeList extends React.Component {
     state = {
         employees: [] // Initialize as an empty array, to be populated from the API
